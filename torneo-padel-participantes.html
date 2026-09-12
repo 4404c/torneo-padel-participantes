@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torneo de Pádel · Participantes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F6FB;
+    --paper:#FFFFFF;
+    --ink:#021140;
+    --ink-soft:#4A5687;
+    --court:#03318C;
+    --court-dark:#021140;
+    --court-tint:#E4E9F6;
+    --clay:#F28705;
+    --clay-tint:#FCE7CE;
+    --ball:#F2CB05;
+    --yellow:#F2E205;
+    --line:#DCE1F0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; margin:0; letter-spacing:.01em; }
+  .wrap{ max-width:920px; margin:0 auto; padding:28px 20px 80px; }
+
+  header.top{ margin-bottom:26px; }
+  header.top .kicker{ color:var(--clay); font-size:13px; font-weight:700; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+  header.top h1{ font-size:40px; text-transform:uppercase; line-height:.95; color:var(--ink); }
+  header.top .stripe{
+    height:6px; margin-top:16px; border-radius:4px;
+    background:linear-gradient(90deg, var(--ink) 0%, var(--court) 30%, var(--clay) 60%, var(--ball) 80%, var(--yellow) 100%);
+  }
+  .livebar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    margin-top:14px; padding:9px 14px; background:var(--court-tint); border-radius:8px; font-size:12.5px; color:var(--court-dark);
+  }
+  .livebar .dotlive{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:7px; }
+  .livebar .dotlive.ok{ background:#22c55e; }
+  .livebar .dotlive.err{ background:#C23B2E; }
+  .livebar .dotlive.wait{ background:var(--ball); animation:pulse 1.6s infinite; }
+  @keyframes pulse{ 0%{opacity:1;} 50%{opacity:.3;} 100%{opacity:1;} }
+
+  .btn{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:10px 18px; border-radius:8px;
+    border:none; cursor:pointer; background:var(--court); color:#fff; transition:background .15s;
+  }
+  .btn:hover{ background:var(--court-dark); }
+  .btn.outline{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  .btn.outline:hover{ background:var(--ink); color:#fff; }
+  .btn.small{ padding:6px 12px; font-size:12.5px; border-radius:6px; }
+
+  nav.tabs{ display:flex; gap:4px; margin-bottom:26px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  nav.tabs button{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; color:var(--ink-soft);
+    background:none; border:none; padding:12px 6px; margin-right:22px; cursor:pointer;
+    border-bottom:3px solid transparent; transition:color .15s, border-color .15s;
+  }
+  nav.tabs button.active{ color:var(--ink); border-color:var(--court); }
+  nav.tabs button:hover{ color:var(--ink); }
+
+  section.panel{ display:none; }
+  section.panel.active{ display:block; }
+
+  .card{ background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:14px; }
+  .hint{ color:var(--ink-soft); font-size:13px; }
+
+  .seg{ display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; width:fit-content; margin-bottom:20px; }
+  .seg button{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:9px 26px; border:none; cursor:pointer;
+    background:var(--paper); color:var(--ink-soft);
+  }
+  .seg button.on.hombres{ background:var(--court); color:#fff; }
+  .seg button.on.mujeres{ background:var(--clay); color:#fff; }
+
+  .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:9px; }
+  .dot.hombres{ background:var(--court); }
+  .dot.mujeres{ background:var(--clay); }
+
+  .catblock{ margin-bottom:30px; }
+  .subhead{ font-size:13px; font-weight:600; color:var(--ink-soft); margin:20px 0 8px; text-transform:uppercase; letter-spacing:.03em; }
+
+  .roundhead{
+    display:flex; align-items:baseline; gap:10px; margin:26px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--ink);
+  }
+  .roundhead .time{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:26px; font-variant-numeric:tabular-nums; }
+  .roundhead .sub{ color:var(--ink-soft); font-size:12.5px; }
+
+  .breakhead{
+    display:flex; align-items:center; gap:10px; margin:30px 0 14px; padding:10px 14px; border-radius:8px;
+    background:var(--court-tint); border:1px dashed var(--court);
+  }
+  .breakhead .time{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:19px; color:var(--court-dark); font-variant-numeric:tabular-nums; }
+  .breakhead .label{ color:var(--court-dark); font-size:13px; font-weight:600; }
+
+  .matchrow{
+    display:grid; grid-template-columns:38px 90px 1fr auto; gap:12px; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  @media(max-width:640px){ .matchrow{ grid-template-columns:1fr; } }
+  .court-badge{
+    width:32px; height:32px; border-radius:50%; background:var(--ink); color:#fff; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-variant-numeric:tabular-nums;
+    position:relative;
+  }
+  .court-badge.buena{ box-shadow:0 0 0 2px var(--ball); }
+  .court-badge.buena::after{ content:'★'; position:absolute; top:-8px; right:-8px; font-size:11px; color:var(--ball); }
+  .grouptag{ font-size:12px; color:var(--ink-soft); }
+  .grouptag .dot{ margin-right:6px; }
+  .versus{ font-size:14.5px; }
+  .versus .p{ font-weight:600; }
+  .versus .vs{ color:var(--ink-soft); font-weight:400; padding:0 6px; font-size:12px; }
+  .score-final{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:20px; font-variant-numeric:tabular-nums; justify-self:end; }
+  .score-final .sep{ color:var(--ink-soft); padding:0 4px; font-weight:600; }
+  .pending-tag{ font-size:11.5px; color:var(--ink-soft); font-style:italic; justify-self:end; }
+
+  table.standings{ width:100%; border-collapse:collapse; font-size:14px; }
+  table.standings th{ text-align:left; font-size:11.5px; color:var(--ink-soft); font-weight:600; padding:6px 8px; border-bottom:2px solid var(--ink); }
+  table.standings td{ padding:8px 8px; border-bottom:1px solid var(--line); }
+  table.standings tr.leader td{ background:linear-gradient(90deg, rgba(242,203,5,.20), transparent 60%); font-weight:700; }
+  table.standings tr.qualifies td{ background:rgba(3,49,140,.06); }
+  table.standings tr.cutoff td{ border-bottom:3px solid var(--ball); }
+  table.standings td.num, table.standings th.num{ text-align:center; font-variant-numeric:tabular-nums; }
+  table.standings td.pos{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:17px; text-align:center; }
+  .qbadge{ display:inline-block; margin-left:8px; font-size:10.5px; font-weight:700; color:var(--court-dark); background:var(--court-tint); border-radius:4px; padding:2px 6px; vertical-align:middle; }
+
+  .bracket-cols{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; align-items:start; }
+  @media(max-width:760px){ .bracket-cols{ grid-template-columns:1fr; } }
+  .bracket-col h4{ font-family:'Big Shoulders Display',sans-serif; font-weight:700; font-size:18px; text-transform:uppercase; margin-bottom:12px; color:var(--ink-soft); }
+  .bracket-col.final h4{ color:var(--ball); }
+  .bmatch{ background:var(--paper); border:1px solid var(--line); border-radius:9px; padding:11px 13px; margin-bottom:16px; }
+  .bmatch .side{ display:flex; align-items:center; justify-content:space-between; padding:5px 0; font-size:13.5px; }
+  .bmatch .side.win{ font-weight:700; color:var(--court-dark); }
+  .bmatch .seed{ display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--court-tint); color:var(--court-dark); font-size:10.5px; font-weight:700; text-align:center; line-height:18px; margin-right:7px; }
+  .bmatch .side.pending{ color:var(--ink-soft); font-style:italic; }
+  .bmatch .divider{ border-top:1px dashed var(--line); margin:2px 0; }
+  .bmatch .bfinal{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:15px; font-variant-numeric:tabular-nums; }
+
+  .empty{ color:var(--ink-soft); font-size:14px; padding:26px 0; text-align:center; border:1px dashed var(--line); border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Torneo de Pádel</div>
+    <h1 id="tname">Torneo de Pádel</h1>
+    <div class="stripe"></div>
+    <div class="livebar" id="livebar">
+      <span><span class="dotlive wait" id="livedot"></span><span id="livetext">Conectando con los datos del torneo…</span></span>
+      <button class="btn small outline" id="refreshbtn">Actualizar ahora</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="fixture" class="active">Fixture</button>
+    <button data-tab="posiciones">Posiciones</button>
+    <button data-tab="bracket">Bracket</button>
+  </nav>
+
+  <!-- FIXTURE -->
+  <section class="panel active" id="panel-fixture">
+    <div id="fixturewrap"></div>
+  </section>
+
+  <!-- POSICIONES -->
+  <section class="panel" id="panel-posiciones">
+    <div class="seg" id="posseg">
+      <button type="button" class="hombres on" data-cat="hombres">Hombres</button>
+      <button type="button" class="mujeres" data-cat="mujeres">Mujeres</button>
+    </div>
+    <div id="posicioneswrap"></div>
+  </section>
+
+  <!-- BRACKET -->
+  <section class="panel" id="panel-bracket">
+    <div class="seg" id="bracketseg">
+      <button type="button" class="hombres on" data-cat="hombres">Hombres</button>
+      <button type="button" class="mujeres" data-cat="mujeres">Mujeres</button>
+    </div>
+    <div id="bracketwrap"></div>
+  </section>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- Firebase SDK (compat, desde CDN) -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  🔥 CONFIGURACIÓN DE FIREBASE — REEMPLAZÁ CON TUS DATOS   ║
+   ║  (Los mismos valores que en torneo-padel-admin.html)        ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyCMDuKsgJuGzlVjhVwauVViv5-npNBpq30",
+  authDomain:        "torneo-padel-castellano.firebaseapp.com",
+  databaseURL:       "https://torneo-padel-castellano-default-rtdb.firebaseio.com",
+  projectId:         "torneo-padel-castellano",
+  storageBucket:     "torneo-padel-castellano.firebasestorage.app",
+  messagingSenderId: "905573724565",
+  appId:             "1:905573724565:web:ae379d00e6b2b9b615869c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const stateRef = db.ref('torneo-padel-state');
+
+/* ---------------- estado (solo lectura) ---------------- */
+let state = {
+  torneoNombre: "Torneo de Pádel",
+  pairs: [], groups: [], matches: [], bracket: {}, startTime: null, updatedAt: null
+};
+let posViewCat = 'hombres';
+let bracketViewCat = 'hombres';
+
+/* ---------------- live status ---------------- */
+function setLiveStatus(status, text){
+  const dot = document.getElementById('livedot');
+  const txt = document.getElementById('livetext');
+  dot.className = 'dotlive ' + status; // ok | err | wait
+  txt.textContent = text;
+}
+
+/* ---------------- utilidades (compartidas con la app de administración) ---------------- */
+function catLabel(c){ return c==='hombres' ? 'Hombres' : 'Mujeres'; }
+function pairById(id){ return state.pairs.find(p=>p.id===id); }
+function pairName(id){ const p=pairById(id); return p ? `${p.p1} / ${p.p2}` : '—'; }
+function groupById(id){ return state.groups.find(g=>g.id===id); }
+function formatMinutes(min){
+  const h = Math.floor(min/60)%24, m = min%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function parseTimeToMinutes(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+const BREAK_START_MIN = 13*60+40;
+const BREAK_END_MIN = 15*60;
+
+function computeStandings(group){
+  const rows = group.pairIds.map(pid=>({ pairId:pid, pj:0, g:0, gf:0, gc:0 }));
+  state.matches.filter(m=>m.groupId===group.id && m.played).forEach(m=>{
+    const a = rows.find(r=>r.pairId===m.pairA), b = rows.find(r=>r.pairId===m.pairB);
+    a.pj++; b.pj++;
+    a.gf += m.scoreA; a.gc += m.scoreB;
+    b.gf += m.scoreB; b.gc += m.scoreA;
+    if(m.scoreA>m.scoreB) a.g++; else if(m.scoreB>m.scoreA) b.g++;
+  });
+  rows.forEach(r=>{ r.pts = r.g*2; r.dg = r.gf-r.gc; });
+  rows.sort((x,y)=> y.pts-x.pts || y.dg-x.dg || y.gf-x.gf);
+  return rows;
+}
+function computeOverallStandings(category){
+  const catGroups = state.groups.filter(g=>g.category===category);
+  const catGroupIds = catGroups.map(g=>g.id);
+  const rows = catGroups.flatMap(g=> g.pairIds.map(pid=>({ pairId:pid, groupLetter:g.letter, pj:0, g:0, gf:0, gc:0 })));
+  state.matches.filter(m=> m.played && catGroupIds.includes(m.groupId)).forEach(m=>{
+    const a = rows.find(r=>r.pairId===m.pairA), b = rows.find(r=>r.pairId===m.pairB);
+    a.pj++; b.pj++;
+    a.gf += m.scoreA; a.gc += m.scoreB;
+    b.gf += m.scoreB; b.gc += m.scoreA;
+    if(m.scoreA>m.scoreB) a.g++; else if(m.scoreB>m.scoreA) b.g++;
+  });
+  rows.forEach(r=>{ r.pts = r.g*2; r.dg = r.gf-r.gc; });
+  rows.sort((x,y)=> y.pts-x.pts || y.dg-x.dg || y.gf-x.gf);
+  return rows;
+}
+function standingsRowsHtml(rows, opts={}){
+  return rows.map((r,i)=>{
+    const qualifies = !!opts.qualifyTop && i<opts.qualifyTop && r.pj>0;
+    const cutoff = !!opts.qualifyTop && i===opts.qualifyTop-1 && rows.length>opts.qualifyTop;
+    const leaderClass = (!opts.qualifyTop && i===0 && r.pj>0) ? 'leader' : '';
+    const cls = [leaderClass, qualifies?'qualifies':'', cutoff?'cutoff':''].filter(Boolean).join(' ');
+    const groupCell = opts.showGroup ? `<td>${r.groupLetter}</td>` : '';
+    const badge = qualifies ? `<span class="qbadge">Cuartos</span>` : '';
+    return `<tr class="${cls}">
+      <td class="pos">${i+1}</td>
+      <td>${pairName(r.pairId)}${badge}</td>
+      ${groupCell}
+      <td class="num">${r.pj}</td>
+      <td class="num">${r.g}</td>
+      <td class="num">${r.dg>0?'+':''}${r.dg}</td>
+      <td class="num">${r.pts}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------------- render: fixture ---------------- */
+function renderFixture(){
+  const wrap = document.getElementById('fixturewrap');
+  if(state.matches.length===0){
+    wrap.innerHTML = `<div class="empty">Todavía no hay fixture cargado.</div>`;
+    return;
+  }
+  const byTime = {};
+  state.matches.forEach(m=>{ (byTime[m.time] = byTime[m.time]||[]).push(m); });
+  const times = Object.keys(byTime).map(Number).sort((a,b)=>a-b);
+
+  let out = '';
+  let breakInserted = false;
+  const scheduleStartMin = state.startTime ? parseTimeToMinutes(state.startTime) : null;
+  times.forEach((t,i)=>{
+    if(!breakInserted && scheduleStartMin!==null && scheduleStartMin<BREAK_START_MIN && t>=BREAK_END_MIN){
+      const prevT = i>0 ? times[i-1] : null;
+      if(prevT===null || prevT<BREAK_START_MIN){
+        out += `<div class="breakhead"><span class="time">${formatMinutes(BREAK_START_MIN)} – ${formatMinutes(BREAK_END_MIN)}</span><span class="label">Descanso · no hay partidos programados</span></div>`;
+        breakInserted = true;
+      }
+    }
+    const rows = byTime[t].sort((a,b)=>a.court-b.court).map(m=>{
+      const g = groupById(m.groupId);
+      const scoreHtml = m.played
+        ? `<span class="score-final">${m.scoreA}<span class="sep">–</span>${m.scoreB}</span>`
+        : `<span class="pending-tag">Pendiente</span>`;
+      return `
+        <div class="matchrow">
+          <div class="court-badge ${(m.court===3||m.court===4)?'buena':''}">${m.court}</div>
+          <div class="grouptag"><span class="dot ${g.category}"></span>${catLabel(g.category)} ${g.letter}</div>
+          <div class="versus"><span class="p">${pairName(m.pairA)}</span><span class="vs">vs</span><span class="p">${pairName(m.pairB)}</span></div>
+          ${scoreHtml}
+        </div>`;
+    }).join('');
+    out += `<div class="roundhead"><span class="time">${formatMinutes(t)}</span><span class="sub">${byTime[t].length} partido(s)</span></div>${rows}`;
+  });
+  wrap.innerHTML = out;
+}
+
+/* ---------------- render: posiciones ---------------- */
+function renderPosiciones(){
+  const wrap = document.getElementById('posicioneswrap');
+  if(state.groups.length===0){
+    wrap.innerHTML = `<div class="empty">Todavía no hay grupos formados.</div>`;
+    return;
+  }
+  const cat = posViewCat;
+  const groups = state.groups.filter(g=>g.category===cat);
+  if(groups.length===0){
+    wrap.innerHTML = `<div class="empty">Todavía no hay grupos de ${catLabel(cat)}.</div>`;
+    return;
+  }
+  const overallRows = computeOverallStandings(cat);
+  const overallTable = `
+    <div class="card">
+      <h3 style="font-size:20px; margin-bottom:2px;">Tabla general</h3>
+      <p class="hint" style="margin:0 0 10px;">Los primeros 8 pasan a cuartos de final.</p>
+      <table class="standings">
+        <thead><tr><th></th><th>Pareja</th><th>Grupo</th><th class="num">PJ</th><th class="num">G</th><th class="num">DG</th><th class="num">Puntos</th></tr></thead>
+        <tbody>${standingsRowsHtml(overallRows, { showGroup:true, qualifyTop:8 })}</tbody>
+      </table>
+    </div>`;
+  const groupTables = groups.map(g=>{
+    const rows = computeStandings(g);
+    return `
+      <div class="card">
+        <h3 style="font-size:20px; margin-bottom:10px;">Grupo ${g.letter}</h3>
+        <table class="standings">
+          <thead><tr><th></th><th>Pareja</th><th class="num">PJ</th><th class="num">G</th><th class="num">DG</th><th class="num">Puntos</th></tr></thead>
+          <tbody>${standingsRowsHtml(rows)}</tbody>
+        </table>
+      </div>`;
+  }).join('');
+  wrap.innerHTML = `${overallTable}<div class="subhead">Por grupo</div>${groupTables}`;
+}
+
+/* ---------------- render: bracket ---------------- */
+function bracketSideHtml(m, side){
+  const pairId = side==='A' ? m.pairA : m.pairB;
+  const seed = side==='A' ? m.seedA : m.seedB;
+  if(!pairId) return `<div class="side pending">Por definir</div>`;
+  const isWinner = m.played && ((side==='A' && m.scoreA>m.scoreB) || (side==='B' && m.scoreB>m.scoreA));
+  const seedTag = seed ? `<span class="seed">${seed}</span>` : '';
+  const score = m.played ? `<span class="bfinal">${side==='A'?m.scoreA:m.scoreB}</span>` : '';
+  return `<div class="side ${isWinner?'win':''}"><span>${seedTag}${pairName(pairId)}</span>${score}</div>`;
+}
+function renderBracketMatch(m){
+  return `<div class="bmatch">
+    ${bracketSideHtml(m,'A')}
+    <div class="divider"></div>
+    ${bracketSideHtml(m,'B')}
+  </div>`;
+}
+function renderBracket(){
+  const wrap = document.getElementById('bracketwrap');
+  const cat = bracketViewCat;
+  const bracket = state.bracket && state.bracket[cat];
+  if(!bracket){
+    wrap.innerHTML = `<div class="empty">El organizador todavía no armó el cuadro de ${catLabel(cat)}.</div>`;
+    return;
+  }
+  const [quarters, semis, final] = bracket.rounds;
+  wrap.innerHTML = `
+    <div class="bracket-cols">
+      <div class="bracket-col">
+        <h4>Cuartos de final</h4>
+        ${quarters.map(renderBracketMatch).join('')}
+      </div>
+      <div class="bracket-col">
+        <h4>Semifinal</h4>
+        ${semis.map(renderBracketMatch).join('')}
+      </div>
+      <div class="bracket-col final">
+        <h4>Final</h4>
+        ${final.map(renderBracketMatch).join('')}
+      </div>
+    </div>`;
+}
+
+function render(){
+  document.getElementById('tname').textContent = state.torneoNombre || 'Torneo de Pádel';
+  renderFixture();
+  renderPosiciones();
+  renderBracket();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FIREBASE REALTIME LISTENER — se actualiza automáticamente
+   cuando el admin guarda cualquier cambio. No hace falta polling.
+   ════════════════════════════════════════════════════════════════ */
+function onDataReceived(data){
+  state = {
+    ...state,
+    ...data,
+    pairs: data.pairs || [],
+    groups: data.groups || [],
+    matches: data.matches || [],
+    bracket: data.bracket || {},
+  };
+  const t = state.updatedAt ? new Date(state.updatedAt) : null;
+  setLiveStatus('ok', t
+    ? `En vivo · actualizado ${t.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`
+    : 'Conectado en vivo ✓');
+  render();
+}
+
+// Listener en tiempo real — se dispara INSTANTÁNEAMENTE cuando el admin guarda
+stateRef.on('value', snapshot => {
+  if(snapshot.exists()){
+    onDataReceived(snapshot.val());
+  } else {
+    setLiveStatus('wait', 'Esperando datos del organizador…');
+  }
+}, error => {
+  console.error('Error de Firebase:', error);
+  setLiveStatus('err', 'Error de conexión — reintentando…');
+});
+
+// Botón de refresh manual (fuerza una re-lectura)
+document.getElementById('refreshbtn').addEventListener('click', async () => {
+  setLiveStatus('wait', 'Actualizando…');
+  try {
+    const snapshot = await stateRef.get();
+    if(snapshot.exists()){
+      onDataReceived(snapshot.val());
+    } else {
+      setLiveStatus('wait', 'Esperando datos del organizador…');
+    }
+  } catch(e){
+    setLiveStatus('err', 'Error al actualizar');
+  }
+});
+
+/* ---------------- eventos de navegación ---------------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+document.querySelectorAll('#posseg button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    posViewCat = btn.dataset.cat;
+    document.querySelectorAll('#posseg button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    renderPosiciones();
+  });
+});
+document.querySelectorAll('#bracketseg button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    bracketViewCat = btn.dataset.cat;
+    document.querySelectorAll('#bracketseg button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    renderBracket();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
