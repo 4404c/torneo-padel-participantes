@@ -30,6 +30,8 @@
   .wrap{ max-width:920px; margin:0 auto; padding:28px 20px 80px; }
 
   header.top{ margin-bottom:26px; }
+  .header-row{ display:flex; align-items:center; gap:16px; }
+  .header-row .logo{ width:64px; height:64px; object-fit:contain; flex-shrink:0; }
   header.top .kicker{ color:var(--clay); font-size:13px; font-weight:700; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
   header.top h1{ font-size:40px; text-transform:uppercase; line-height:.95; color:var(--ink); }
   header.top .stripe{
@@ -148,8 +150,13 @@
 <div class="wrap">
 
   <header class="top">
-    <div class="kicker">Torneo de Pádel</div>
-    <h1 id="tname">Torneo de Pádel</h1>
+    <div class="header-row">
+      <img src="img/logo-padel.png" alt="Logo Torneo" class="logo">
+      <div>
+        <div class="kicker">Torneo de Pádel</div>
+        <h1 id="tname">Torneo de Pádel</h1>
+      </div>
+    </div>
     <div class="stripe"></div>
     <div class="livebar" id="livebar">
       <span><span class="dotlive wait" id="livedot"></span><span id="livetext">Conectando con los datos del torneo…</span></span>
